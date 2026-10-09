@@ -1,5 +1,17 @@
 const timetable = require("../data/timetable");
 
+const reminderMinutesValue = process.env.REMINDER_MINUTES ?? "30";
+
+if (!/^\d+$/.test(reminderMinutesValue)) {
+    throw new Error("REMINDER_MINUTES must be a non-negative integer.");
+}
+
+const reminderMinutes = Number(reminderMinutesValue);
+
+if (!Number.isSafeInteger(reminderMinutes)) {
+    throw new Error("REMINDER_MINUTES must be a non-negative safe integer.");
+}
+
 function getCurrentDay() {
     return new Date().toLocaleDateString("en-US", {
         weekday: "long"
@@ -45,8 +57,8 @@ function timetableAgent() {
 
         const difference = startMinutes - currentMinutes;
 
-        // Alert 30 minutes before class
-        if (difference >= 0 && difference <= 30) {
+        // Alert within the configured number of minutes before class
+        if (difference >= 0 && difference <= reminderMinutes) {
 
             const message =
                 `🔔 University Class Alert\n\n` +
